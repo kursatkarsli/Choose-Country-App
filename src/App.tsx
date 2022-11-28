@@ -1,24 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { TextField } from "@mui/material";
+import React from "react";
+import "./App.css";
+import DataTable from "./components/table";
+import { FetchCountriesData } from "./helpers/FetchCountriesData";
 
 function App() {
+  const [filter, setFilter] = React.useState<string>("");
+  const [data, setData] = React.useState<Object>();
+
+  React.useEffect(() => {
+    (async function getData() {
+      const response = await FetchCountriesData(filter);
+      setData(response);
+    })();
+  }, [filter]);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h3>Country Search App</h3>
+      <TextField
+        id="standard-basic"
+        label="Country Code"
+        variant="standard"
+        type="text"
+        placeholder="Search Code"
+        data-testid="searchInput"
+        inputProps={{
+          maxLength: 2,
+        }}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setFilter(e.target.value.toUpperCase());
+        }}
+      />
+      {data && <DataTable countries={data} />}
     </div>
   );
 }
